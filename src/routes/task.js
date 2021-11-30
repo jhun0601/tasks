@@ -6,8 +6,6 @@ const auth = require("../middleware/auth");
 const Task = require("../models/task");
 
 router.post("/tasks", auth, async (req, res) => {
-  // const task = new Task(req.body);
-
   const task = new Task({
     ...req.body,
     user_id: req.user._id,
@@ -21,8 +19,6 @@ router.post("/tasks", auth, async (req, res) => {
 });
 router.get("/tasks", auth, async (req, res) => {
   try {
-    // const task = await Task.find({});
-    // const task = await Task.find({ user_id: req.user._id });
     await req.user.populate("tasks");
     res.send(req.user.tasks);
   } catch (error) {
@@ -32,7 +28,6 @@ router.get("/tasks", auth, async (req, res) => {
 router.get("/tasks/:id", auth, async (req, res) => {
   const _id = req.params.id;
   try {
-    // const task = await Task.findById(_id);
     const task = await Task.findOne({ _id, user_id: req.user._id });
     if (!task) {
       return res.status(404).send();
@@ -52,16 +47,11 @@ router.patch("/tasks/:id", auth, async (req, res) => {
     return res.status(404).send({ error: "Invalid Updates" });
   }
   try {
-    // const task = await Task.findById(req.params.id);
     const task = await Task.findOne({
       _id: req.params.id,
       user_id: req.user._id,
     });
-    // bypass Mongoose
-    // const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
-    //   new: true,
-    //   runValidators: true,
-    // });
+
     if (!task) {
       return res.status(400).send("Invalid Updates");
     }
